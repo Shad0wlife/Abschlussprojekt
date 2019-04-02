@@ -1,3 +1,4 @@
+import java.util.List;
 
 public class GZTMatrixGenerator {
 
@@ -133,20 +134,29 @@ public class GZTMatrixGenerator {
 		if((inLength & (inLength - 1)) != 0) {
 			return null;
 		}
-		int log2 = Integer.toBinaryString(inLength).length() - Integer.toBinaryString(inLength).indexOf("1");
+		int log2 = Integer.toBinaryString(inLength).length() - Integer.toBinaryString(inLength).indexOf("1") - 1;
 		int[] spectrum = new int[log2 + 1];
 		int idx = 0;
-		while(inLength > 0) {
+		while(inLength > 1) {
 			section /= 2;
 			int sum = 0;
 			for(int cnt = 0; cnt < section; cnt++) {
 				sum += Math.abs(transformed[cnt + inLength - 2 * section]);
 			}
 			spectrum[idx++] = sum;
+			inLength -= section;
 		}
 		spectrum[idx] = Math.abs(transformed[inLength - 1]);
 		
 		return spectrum;
+	}
+	
+	public static int[] averageGSpectrum(List<int[]> spectrums) {
+		int[] res = new int[spectrums.get(0).length];
+		for (int[] arr : spectrums) {
+			res = Util.addVectors(res, arr);
+		}
+		return res;
 	}
 	
 }

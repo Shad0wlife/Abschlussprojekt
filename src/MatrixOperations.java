@@ -23,7 +23,7 @@ public class MatrixOperations {
                 // Position s in Zeile der Matrix und Position im Vektor
                 for(int s = 0; s < width; s++)
                 {
-                    result[posResult] = matrix[posResult][s] * vector[s];
+                    result[posResult] += matrix[posResult][s] * vector[s];
                 }
             }
             return result;
