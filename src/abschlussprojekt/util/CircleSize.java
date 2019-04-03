@@ -1,3 +1,4 @@
+package abschlussprojekt.util;
 
 public enum CircleSize {
 	D6_16(6, 16),

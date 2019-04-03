@@ -1,3 +1,4 @@
+import abschlussprojekt.gui.SelectionGui;
 import ij.ImagePlus;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
@@ -13,10 +14,8 @@ public class RecognitionPlugin_ implements PlugInFilter {
 
 	@Override
 	public void run(ImageProcessor ip) {
-		SelectionGui gui = new SelectionGui(ip);
+		SelectionGui gui = new SelectionGui(ip); //Does this chain make sense?
 		gui.setVisible(true);
-		System.out.println("\r\nDONE");
-		
 	}
 		
 }

@@ -1,3 +1,5 @@
+package abschlussprojekt.classification;
+
 import java.util.List;
 
 public class FeatureMembershipFunction {
@@ -12,6 +14,7 @@ public class FeatureMembershipFunction {
 		}
 		this.pce = pce;
 		this.D = D.getValue();
+		this.learn(features);
 	}
 	
 	public void learn(List<Integer> features) {
@@ -31,6 +34,11 @@ public class FeatureMembershipFunction {
 		this.S = m + (double)min;
 		
 		C = (1.0 + (2.0 * pce)) * m;
+		
+		//Handle special case that min=max (equals case min = max-1 and pce = 0)
+		if(C == 0.0) {
+			C = 1.0;
+		}
 	}
 	
 	public double distance(int feature) {

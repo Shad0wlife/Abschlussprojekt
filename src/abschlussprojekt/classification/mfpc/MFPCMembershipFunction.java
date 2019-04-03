@@ -1,14 +1,20 @@
+package abschlussprojekt.classification.mfpc;
+
 import java.util.LinkedList;
 import java.util.List;
 
-public class MembershipFunction {
+import abschlussprojekt.classification.DValue;
+import abschlussprojekt.classification.FeatureMembershipFunction;
+import abschlussprojekt.util.Util;
+
+public class MFPCMembershipFunction {
 	DValue D;
 	double pce;
 	double C;
 	FeatureMembershipFunction[] fmfs;
 	final int vectorSize;
 	
-	public MembershipFunction(DValue D, double pce, List<int[]> featureVectors) {
+	public MFPCMembershipFunction(DValue D, double pce, List<int[]> featureVectors) {
 		if(pce < 0.0 || pce > 1.0) {
 			throw new IllegalArgumentException("pce must be in the interval [0,1]");
 		}
@@ -29,7 +35,7 @@ public class MembershipFunction {
 		
 		featureVectors.forEach(arr -> {
 			for(int cnt = 0; cnt < arr.length; cnt++) {
-				featureLists[cnt].add(arr[cnt]);
+				featureLists[cnt].add(Integer.valueOf(arr[cnt]));
 			}
 		});
 		
@@ -44,9 +50,11 @@ public class MembershipFunction {
 		}
 		double[] distances = new double[vectorSize];
 		for(int cnt = 0; cnt < vectorSize; cnt++) {
-			distances[cnt] =  fmfs[cnt].distance(featureVector[cnt]);
+			double distance = fmfs[cnt].distance(featureVector[cnt]);
+			System.out.println("Distance feature index " + cnt + " is: " + distance);
+			distances[cnt] =  distance;
 		}
-		return Math.pow(2.0, (-1.0/vectorSize) * Util.arraySumme(distances));
+		return Math.pow(2.0, (-1.0 * Util.arraySumme(distances)) / vectorSize);
 	}
 	
 }

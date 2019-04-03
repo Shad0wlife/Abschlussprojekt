@@ -1,3 +1,5 @@
+package abschlussprojekt.util;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,11 +37,11 @@ public class Util {
 	}
 	
 	public static void printArray(int[] arr) {
-		System.out.print("[");
-		for (int cnt = 0; cnt < (arr.length - 1); cnt++) {
-			System.out.print(arr[cnt] + ", ");
-		}
-		System.out.println(arr[arr.length - 1] + "]");
+		System.out.println(Arrays.toString(arr));
+	}
+	
+	public static void printArray(boolean[] arr) {
+		System.out.println(Arrays.toString(arr));
 	}
 	
 	public static double arraySumme(double[] array) {
@@ -59,5 +61,13 @@ public class Util {
 			res[cnt] = lhs[cnt] + rhs[cnt];
 		}
 		return res;
+	}
+	
+	public static void reverseArray(double[] arr) {
+		for(int cnt = 0; cnt < arr.length/2; cnt++) {
+			double x = arr[cnt];
+			arr[cnt] = arr[arr.length - 1 - cnt];
+			arr[arr.length - 1 - cnt] = x;
+		}
 	}
 }

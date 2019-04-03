@@ -1,7 +1,22 @@
+package abschlussprojekt.util.math;
+
 import java.util.List;
+
+import abschlussprojekt.util.Util;
+import abschlussprojekt.util.GZT;
 
 public class GZTMatrixGenerator {
 
+	public static int[][] getGZT(GZT gzt, int exponent){
+		switch(gzt) {
+		case SWT:
+			return swt(exponent);
+		case GZTA1:
+			return gzta1(exponent);
+		}
+		return null;
+	}
+	
 	/**
 	 * Creates an SWT Matrix of dimension 2^exponent x 2^exponent
 	 * @param exponent the exponent of 2 by which the matrix dimension is defined
