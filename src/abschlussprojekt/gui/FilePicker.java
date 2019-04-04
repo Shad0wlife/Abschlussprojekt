@@ -32,6 +32,7 @@ public class FilePicker extends JDialog {
 		setModal(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 800, 520);
+		setTitle("Bitte einen Ordner mit den Zielbildern w\u00E4hlen.");
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
