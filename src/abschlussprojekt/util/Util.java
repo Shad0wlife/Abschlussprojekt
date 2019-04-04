@@ -24,8 +24,15 @@ public class Util {
 		return l2;
 	}
 	
-	public static void printListOfArrays(List<int[]> toPrint) {
+	public static void printListOfIntArrays(List<int[]> toPrint) {
 		for(int[] arr : toPrint) {
+			printArray(arr);
+		}
+	}
+	
+	
+	public static void printListOfBooleanArrays(List<boolean[]> toPrint) {
+		for(boolean[] arr : toPrint) {
 			printArray(arr);
 		}
 	}

@@ -17,6 +17,10 @@ import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.BoxLayout;
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import abschlussprojekt.classification.DValue;
@@ -35,10 +39,19 @@ public class SelectionGui extends JDialog {
 	private final ButtonGroup gztGroup = new ButtonGroup();
 	private final ButtonGroup classifierGroup = new ButtonGroup();
 	private double sliderValue = 0.5;
+	
+	/**
+	 * Constructor for one ImageProcessor
+	 * @param ip
+	 */
+	public SelectionGui(ImageProcessor ip) {
+		this(Arrays.asList(new ImageProcessor[] {ip}));
+	}
+	
 	/**
 	 * Create the frame.
 	 */
-	public SelectionGui(ImageProcessor ip) {
+	public SelectionGui(List<ImageProcessor> ips) {
 		setModal(true);
 		setTitle("Einstellungen ausw\u00E4hlen");
 		setBounds(100, 100, 300, 400);
@@ -151,7 +164,7 @@ public class SelectionGui extends JDialog {
 		
 		//OK button
 		JButton btnOk = new JButton("OK");
-		btnOk.addActionListener(new OKActionListener(ip, this, comboBox, gztGroup, classifierGroup, dComboBox, sliderValue));
+		btnOk.addActionListener(new OKActionListener(ips, this, comboBox, gztGroup, classifierGroup, dComboBox, sliderValue));
 		contentPane.add(btnOk);
 	}
 

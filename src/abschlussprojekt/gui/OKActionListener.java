@@ -32,7 +32,7 @@ import ij.process.ImageProcessor;
 
 public class OKActionListener implements ActionListener{
 
-	private ImageProcessor ip;
+	private List<ImageProcessor> ips;
 	private JComboBox<CircleSize> comboBox;
 	private JDialog parent;
 	private ButtonGroup gztGroup;
@@ -40,8 +40,8 @@ public class OKActionListener implements ActionListener{
 	private JComboBox<DValue> dComboBox;
 	private double pce;
 	
-	public OKActionListener(ImageProcessor ip, JDialog parent, JComboBox<CircleSize> cb, ButtonGroup gztGroup, ButtonGroup classifierGroup, JComboBox<DValue> dval, double pce) {
-		this.ip = ip;
+	public OKActionListener(List<ImageProcessor> ips, JDialog parent, JComboBox<CircleSize> cb, ButtonGroup gztGroup, ButtonGroup classifierGroup, JComboBox<DValue> dval, double pce) {
+		this.ips = ips;
 		this.parent = parent;
 		this.comboBox = cb;
 		this.gztGroup = gztGroup;
@@ -141,12 +141,15 @@ public class OKActionListener implements ActionListener{
 			return;
 		}
 		
-		System.out.println("\r\nTarget Spectrum");
-		int[] ags = ImageSpectrum.getImageGSpectrum(this.ip, size, gzt);
+		System.out.println("\r\nTarget Spectrums");
+		List<boolean[]> classifications = new LinkedList<>();
+		for(int cnt = 0; cnt < ips.size(); cnt++) {
+			int[] ags = ImageSpectrum.getImageGSpectrum(this.ips.get(cnt), size, gzt);
+
+			classifications.add(classifierObj.classify(ags));
+		}
 		
-		boolean[] classification = classifierObj.classify(ags);
-		
-		Util.printArray(classification);
+		Util.printListOfBooleanArrays(classifications);
 
 		this.parent.dispose();
 	}
