@@ -12,6 +12,7 @@ import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 
@@ -19,6 +20,7 @@ import abschlussprojekt.classification.DValue;
 import abschlussprojekt.classification.FPC_Derivate;
 import abschlussprojekt.classification.mfpc.MFPC;
 import abschlussprojekt.classification.oamfpc.OAMFPC;
+import abschlussprojekt.util.CSVWriter;
 import abschlussprojekt.util.CircleSize;
 import abschlussprojekt.util.Classifier;
 import abschlussprojekt.util.Colorspace;
@@ -130,26 +132,44 @@ public class OKActionListener implements ActionListener{
 		}while(next);
 		
 		FPC_Derivate classifierObj;
+		double[] weights;
+		OAMFPCWeightSlider sliderGui;
 		switch(classifier) {
 		case MFPC:
 			classifierObj = new MFPC(D, this.pce, classData);
 			break;
 		case OAMFPC:
-			classifierObj = new OAMFPC(D, this.pce, classData);
+			weights = new double[size.getSpectrumSize()];
+			sliderGui = new OAMFPCWeightSlider(weights);
+			sliderGui.setVisible(true);
+			classifierObj = new OAMFPC(D, this.pce, classData, weights);
 			break;
 		default:
 			return;
 		}
 		
 		System.out.println("\r\nTarget Spectrums");
-		List<boolean[]> classifications = new LinkedList<>();
+		List<int[]> classifications = new LinkedList<>();
 		for(int cnt = 0; cnt < ips.size(); cnt++) {
 			int[] ags = ImageSpectrum.getImageGSpectrum(this.ips.get(cnt), size, gzt);
 
 			classifications.add(classifierObj.classify(ags));
 		}
 		
-		Util.printListOfBooleanArrays(classifications);
+		Util.printListOfIntArrays(classifications);
+		
+		JFileChooser fileSaver = new JFileChooser(path[0]);
+		switch(fileSaver.showSaveDialog(parent)) {
+		case JFileChooser.APPROVE_OPTION:
+			File selected = fileSaver.getSelectedFile();
+			CSVWriter writer = new CSVWriter(selected);
+			writer.write(classifications);
+			JOptionPane.showMessageDialog(parent, "Ergebnisse gespeichert.");
+			break;
+		default:
+			JOptionPane.showMessageDialog(parent, "Ergebnisse NICHT gespeichert.");
+			break;
+		}
 
 		this.parent.dispose();
 	}

@@ -16,12 +16,12 @@ public class MFPC implements FPC_Derivate {
 	}
 
 	@Override
-	public boolean[] classify(int[] featureVector) {
+	public int[] classify(int[] featureVector) {
 		int size = membershipFunctions.size();
 		double[] memberships = new double[size]; //DEBUG
 		double max = Double.NEGATIVE_INFINITY;
 		int maxIdx = -1;
-		boolean[] result = new boolean[size];
+		int[] result = new int[size];
 		
 		for(int cnt = 0; cnt < size; cnt++) {
 			double membership = membershipFunctions.get(cnt).membership(featureVector);
@@ -33,7 +33,7 @@ public class MFPC implements FPC_Derivate {
 				maxIdx = cnt;
 			}
 		}
-		result[maxIdx] = true;
+		result[maxIdx] = 1;
 		
 		return result;
 	}

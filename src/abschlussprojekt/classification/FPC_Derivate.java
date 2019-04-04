@@ -1,5 +1,5 @@
 package abschlussprojekt.classification;
 
 public interface FPC_Derivate {
-	public boolean[] classify(int[] featureVector);
+	public int[] classify(int[] featureVector);
 }

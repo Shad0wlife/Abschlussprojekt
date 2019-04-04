@@ -30,7 +30,6 @@ public class Util {
 		}
 	}
 	
-	
 	public static void printListOfBooleanArrays(List<boolean[]> toPrint) {
 		for(boolean[] arr : toPrint) {
 			printArray(arr);

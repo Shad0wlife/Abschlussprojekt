@@ -29,6 +29,10 @@ public enum CircleSize {
 		return this.circumference;
 	}
 	
+	public int getSpectrumSize() {
+		return Util.log2(this.getCircumference()) + 1;
+	}
+	
 	@Override
 	public String toString() {
 		return "Durchmesser: " + this.getDiameter() + ", Umfang: " + this.getCircumference();

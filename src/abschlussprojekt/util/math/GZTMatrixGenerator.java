@@ -149,7 +149,7 @@ public class GZTMatrixGenerator {
 		if((inLength & (inLength - 1)) != 0) {
 			return null;
 		}
-		int log2 = Integer.toBinaryString(inLength).length() - Integer.toBinaryString(inLength).indexOf("1") - 1;
+		int log2 = Util.log2(inLength);
 		int[] spectrum = new int[log2 + 1];
 		int idx = 0;
 		while(inLength > 1) {

@@ -11,26 +11,24 @@ import abschlussprojekt.gui.OAMFPCWeightSlider;
 public class OAMFPC implements FPC_Derivate {
 	
 	private List<OAMFPCMembershipFunction> membershipFunctions;
+	private double[] weights;
 	
-	public OAMFPC(DValue D, double pce, List<List<int[]>> learningVectors){
+	public OAMFPC(DValue D, double pce, List<List<int[]>> learningVectors, double[] weights){
 		membershipFunctions = new LinkedList<>();
+		this.weights = weights;
 		learn(D, pce, learningVectors);
 	}
 
 	@Override
-	public boolean[] classify(int[] featureVector) {
+	public int[] classify(int[] featureVector) {
 		int size = membershipFunctions.size();
 		double[] memberships = new double[size]; //DEBUG
 		double max = Double.NEGATIVE_INFINITY;
 		int maxIdx = -1;
-		boolean[] result = new boolean[size];
-		
-		double[] weights = new double[featureVector.length];
-		OAMFPCWeightSlider sliderGui = new OAMFPCWeightSlider(weights);
-		sliderGui.setVisible(true);
+		int[] result = new int[size];
 		
 		for(int cnt = 0; cnt < size; cnt++) {
-			double membership = membershipFunctions.get(cnt).membership(featureVector, weights);
+			double membership = membershipFunctions.get(cnt).membership(featureVector, this.weights);
 			memberships[cnt] = membership; //DEBUG
 			
 			if(membership > max) {
@@ -38,7 +36,7 @@ public class OAMFPC implements FPC_Derivate {
 				maxIdx = cnt;
 			}
 		}
-		result[maxIdx] = true;
+		result[maxIdx] = 1;
 		
 		return result;
 	}
