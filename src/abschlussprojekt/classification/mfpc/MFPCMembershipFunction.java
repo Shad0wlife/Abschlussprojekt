@@ -26,5 +26,19 @@ public class MFPCMembershipFunction extends MembershipFunction{
 		
 		return Math.pow(2.0, (-1.0 * Util.arraySumme(distances)) / vectorSize);
 	}
+
+	/**
+	 * Gets the distance values of a feature vector from the membership functions of each feature
+	 * @param featureVector The feature vector to classify
+	 * @return The distances of each feature
+	 */
+	private double[] getDistances(int[] featureVector) {
+		double[] intermediate = new double[vectorSize];
+		for(int cnt = 0; cnt < vectorSize; cnt++) {
+			double distance = fmfs[cnt].distance(featureVector[cnt]);
+			intermediate[cnt] = distance;
+		}
+		return intermediate;
+	}
 	
 }

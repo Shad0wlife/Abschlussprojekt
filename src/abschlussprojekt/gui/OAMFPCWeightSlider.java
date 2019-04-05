@@ -16,7 +16,6 @@ import abschlussprojekt.util.Util;
 import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JSeparator;
 
 public class OAMFPCWeightSlider extends JDialog {
 

@@ -52,4 +52,19 @@ public class OAMFPCMembershipFunction extends MembershipFunction{
 		return weighted;
 	}
 	
+	/**
+	 * Gets the distance values of a feature vector from the membership functions of each feature
+	 * @param featureVector The feature vector to classify
+	 * @return The distances of each feature
+	 */
+	private double[] getDistances(int[] featureVector) {
+		double[] intermediate = new double[vectorSize];
+		for(int cnt = 0; cnt < vectorSize; cnt++) {
+			double distance = fmfs[cnt].distance(featureVector[cnt]);
+			double mu = Math.pow(2.0, -distance);
+			intermediate[cnt] = mu;
+		}
+		return intermediate;
+	}
+	
 }
