@@ -240,7 +240,7 @@ public class OKActionListener implements ActionListener{
 	private List<int[]> classifyImages(List<ImageProcessor> imageProcessors, FPC_Derivate classifierObj, CircleSize size, GZT gzt){
 		List<int[]> classifications = new LinkedList<>();
 		for(int cnt = 0; cnt < imageProcessors.size(); cnt++) {
-			int[] imageSpectrum = ImageSpectrum.getImageGSpectrum(this.imageProcessors.get(cnt), size, gzt);
+			int[] imageSpectrum = ImageSpectrum.getImageGSpectrum(imageProcessors.get(cnt), size, gzt);
 
 			classifications.add(classifierObj.classify(imageSpectrum));
 		}
