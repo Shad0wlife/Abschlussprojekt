@@ -42,7 +42,7 @@ public class MorphologicFilter {
 				min = Integer.MAX_VALUE;
 				for (int wOfMatrix = w-(matrixSize/2); wOfMatrix <= w+(matrixSize/2); wOfMatrix++) {
 					for (int hOfMatrix = h-(matrixSize/2); hOfMatrix <= h+(matrixSize/2); hOfMatrix++) {
-						int pixelValue = ip.get(wOfMatrix, wOfMatrix);
+						int pixelValue = ip.get(wOfMatrix, hOfMatrix);
 						if (pixelValue > max) {
 							max = pixelValue;
 						}

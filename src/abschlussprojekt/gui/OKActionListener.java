@@ -36,7 +36,7 @@ import ij.process.ImageProcessor;
 public class OKActionListener implements ActionListener{
 
 	private List<ImageProcessor> imageProcessors;
-	private MorphologicFilterSettings preprocessingSettings;
+	private List<MorphologicFilterSettings> preprocessingSettings;
 	private JComboBox<CircleSize> sizeComboBox;
 	private JDialog parent;
 	private ButtonGroup gztGroup;
@@ -44,7 +44,7 @@ public class OKActionListener implements ActionListener{
 	private JComboBox<DValue> dComboBox;
 	private double pce;
 	
-	public OKActionListener(List<ImageProcessor> imageProcessors, MorphologicFilterSettings preprocessingSettings, JDialog parent, JComboBox<CircleSize> sizeComboBox, ButtonGroup gztGroup, ButtonGroup classifierGroup, JComboBox<DValue> dComboBox, double pce) {
+	public OKActionListener(List<ImageProcessor> imageProcessors, List<MorphologicFilterSettings> preprocessingSettings, JDialog parent, JComboBox<CircleSize> sizeComboBox, ButtonGroup gztGroup, ButtonGroup classifierGroup, JComboBox<DValue> dComboBox, double pce) {
 		this.imageProcessors = imageProcessors;
 		this.preprocessingSettings = preprocessingSettings;
 		this.parent = parent;
@@ -132,10 +132,10 @@ public class OKActionListener implements ActionListener{
 	 * @param size The {@link CircleSize} selection used for the transformation
 	 * @param gzt The {@link GZT} selection used for the transformation
 	 * @param space The {@link Colorspace} that should be used in case of RGB Images in the selection
-	 * @param preprocessingSettings The {@link MorphologicFilterSettings} containing the preprocessing filter choice and the corresponding matrix size given by the user
+	 * @param preprocessingSettings The List of {@link MorphologicFilterSettings} containing the preprocessing filter choices in their order and the corresponding matrix sizes given by the user
 	 * @return The list of the image spectrums as a List of int[]
 	 */
-	private List<int[]> getSpectrumsFromImagePluses(List<ImagePlus> imagePluses, CircleSize size, GZT gzt, Colorspace space, MorphologicFilterSettings preprocessingSettings){
+	private List<int[]> getSpectrumsFromImagePluses(List<ImagePlus> imagePluses, CircleSize size, GZT gzt, Colorspace space, List<MorphologicFilterSettings> preprocessingSettings){
 		List<int[]> spectrums = new LinkedList<>();
 		for (ImagePlus imagePlus : imagePluses) {
 			spectrums.add(this.getSpectrumFromImagePlus(imagePlus, size, gzt, space, preprocessingSettings));
@@ -149,13 +149,15 @@ public class OKActionListener implements ActionListener{
 	 * @param size The {@link CircleSize} selection used for the transformation
 	 * @param gzt The {@link GZT} selection used for the transformation
 	 * @param space The {@link Colorspace} that should be used in case of RGB Images in the selection
-	 * @param preprocessingSettings The {@link MorphologicFilterSettings} containing the preprocessing filter choice and the corresponding matrix size given by the user
+	 * @param preprocessingSettings The List of {@link MorphologicFilterSettings} containing the preprocessing filter choices in their order and the corresponding matrix sizes given by the user
 	 * @return The image spectrum as an int[]
 	 */
-	private int[] getSpectrumFromImagePlus(ImagePlus imagePlus, CircleSize size, GZT gzt, Colorspace space, MorphologicFilterSettings preprocessingSettings) {
+	private int[] getSpectrumFromImagePlus(ImagePlus imagePlus, CircleSize size, GZT gzt, Colorspace space, List<MorphologicFilterSettings> preprocessingSettings) {
 		ImageProcessor imageProcessor = Util.get8BitImageProcessor(imagePlus, space);
 		
-		MorphologicFilter.morph(imageProcessor, preprocessingSettings);
+		for (MorphologicFilterSettings preprocessingSetting : preprocessingSettings) {
+			MorphologicFilter.morph(imageProcessor, preprocessingSetting);
+		}
 		
 		return ImageSpectrum.getImageGSpectrum(imageProcessor, size, gzt);
 	}

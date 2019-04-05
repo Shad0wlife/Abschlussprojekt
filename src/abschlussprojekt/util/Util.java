@@ -107,6 +107,21 @@ public class Util {
 	}
 	
 	/**
+	 * Asks the User whether another iteration of preprocessing should be done
+	 * @return The user's choice
+	 */
+	public static boolean checkForNextPreprocessing() {
+		final String[] options = {"Ja.", "Nein."};
+		int selected = JOptionPane.showOptionDialog(null, "Mehr Vorverarbeitung durchführen?", "Mehr Vorverarbeitung?", 
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		if(selected == JOptionPane.YES_OPTION) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	/**
 	 * Opens a file picker to open a folder containing image files and returns the list of ImagePluses of the images in the chosen folder
 	 * @param startPathPointer A 1-element File array containing the File object of the folder the dialog should open in by default
 	 * @return The list of images in the chosen folder as List of ImagePlus

@@ -16,13 +16,13 @@ import ij.process.ImageProcessor;
 
 public class RecognitionPluginBulk_ implements PlugIn {
 
-	private MorphologicFilterSettings filterSettings = new MorphologicFilterSettings(MorphologicFilterChoice.NONE, 0);
+	private List<MorphologicFilterSettings> filterSettings = new LinkedList<MorphologicFilterSettings>();
 	
 	@Override
 	public void run(String arg) {		
 		List<ImagePlus> imagePluses = Util.getImagesWithDialog();
 		
-		if(!imagePluses.isEmpty()) {			
+		if(!imagePluses.isEmpty()) {
 			List<ImageProcessor> imageProcessors = get8BitImageProcessors(imagePluses);
 
 			preprocessing(imageProcessors);
@@ -55,20 +55,23 @@ public class RecognitionPluginBulk_ implements PlugIn {
 	 * @param imageProcessor The images to preprocess
 	 */
 	private void preprocessing(List<ImageProcessor> imageProcessors) {
-		MorphologicFilterChoice morphChoice = Util.getMorphChoice();
-		if(morphChoice != MorphologicFilterChoice.NONE) {
-			int matrixSize = (int)IJ.getNumber("Wie groﬂ soll die morphologische Matrix sein?", 3); // Input of matrix dimensions
-			if(matrixSize != IJ.CANCELED) {
-				this.filterSettings = new MorphologicFilterSettings(morphChoice, matrixSize);
-				for (ImageProcessor imageProcessor : imageProcessors) {
-					MorphologicFilter.morph(imageProcessor, this.filterSettings);
+		do {
+			MorphologicFilterChoice morphChoice = Util.getMorphChoice();
+			if(morphChoice != MorphologicFilterChoice.NONE) {
+				int matrixSize = (int)IJ.getNumber("Wie groﬂ soll die morphologische Matrix sein?", 3); // Input of matrix dimensions
+				if(matrixSize != IJ.CANCELED) {
+					MorphologicFilterSettings currentSettings = new MorphologicFilterSettings(morphChoice, matrixSize);
+					this.filterSettings.add(currentSettings); //add settings to ordered list to reproduce order on learning data
+					for (ImageProcessor imageProcessor : imageProcessors) {
+						MorphologicFilter.morph(imageProcessor, currentSettings);
+					}
+				}else {
+					JOptionPane.showMessageDialog(null, "Morphologischer Filter abgebrochen und nicht gespeichert.");
 				}
 			}else {
-				JOptionPane.showMessageDialog(null, "Morphologischer Filter abgebrochen.");
+				break;
 			}
-		}else {
-			
-		}
+		}while(Util.checkForNextPreprocessing());
 	}
 
 }

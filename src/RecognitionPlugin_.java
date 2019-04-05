@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 import abschlussprojekt.gui.SelectionGui;
@@ -13,7 +16,7 @@ import ij.process.ImageProcessor;
 public class RecognitionPlugin_ implements PlugInFilter {
 
 	private final int FLAGS = DOES_8G;
-	private MorphologicFilterSettings filterSettings = new MorphologicFilterSettings(MorphologicFilterChoice.NONE, 0);
+	private List<MorphologicFilterSettings> filterSettings = new LinkedList<MorphologicFilterSettings>();
 	
 	@Override
 	public int setup(String arg, ImagePlus imp) {
@@ -33,18 +36,21 @@ public class RecognitionPlugin_ implements PlugInFilter {
 	 * @param imageProcessor The image to preprocess
 	 */
 	private void preprocessing(ImageProcessor imageProcessor) {
-		MorphologicFilterChoice morphChoice = Util.getMorphChoice();
-		if(morphChoice != MorphologicFilterChoice.NONE) {
-			int matrixSize = (int)IJ.getNumber("Wie groﬂ soll die morphologische Matrix sein?", 3); // Input of matrix dimensions
-			if(matrixSize != IJ.CANCELED) {
-				this.filterSettings = new MorphologicFilterSettings(morphChoice, matrixSize);
-				MorphologicFilter.morph(imageProcessor, filterSettings);
+		do {
+			MorphologicFilterChoice morphChoice = Util.getMorphChoice();
+			if(morphChoice != MorphologicFilterChoice.NONE) {
+				int matrixSize = (int)IJ.getNumber("Wie groﬂ soll die morphologische Matrix sein?", 3); // Input of matrix dimensions
+				if(matrixSize != IJ.CANCELED) {
+					MorphologicFilterSettings currentSettings = new MorphologicFilterSettings(morphChoice, matrixSize);
+					this.filterSettings.add(currentSettings); //add settings to ordered list to reproduce order on learning data
+					MorphologicFilter.morph(imageProcessor, currentSettings);
+				}else {
+					JOptionPane.showMessageDialog(null, "Morphologischer Filter abgebrochen und nicht gespeichert.");
+				}
 			}else {
-				JOptionPane.showMessageDialog(null, "Morphologischer Filter abgebrochen.");
+				break;
 			}
-		}else {
-			
-		}
+		}while(Util.checkForNextPreprocessing());
 	}
 		
 }

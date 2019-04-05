@@ -41,19 +41,19 @@ public class SelectionGui extends JDialog {
 	/**
 	 * Constructor for one ImageProcessor
 	 * @param ip The ImageProcessor to classify
-	 * @param preprocessingSettings The {@link MorphologicFilterSettings} containing the preprocessing filter choice and the corresponding matrix size given by the user
+	 * @param preprocessingSettings The List of {@link MorphologicFilterSettings} containing the preprocessing filter choices in their order and the corresponding matrix sizes given by the user
 	 */
-	public SelectionGui(ImageProcessor ip, MorphologicFilterSettings preprocessingSettings) {
+	public SelectionGui(ImageProcessor ip, List<MorphologicFilterSettings> preprocessingSettings) {
 		this(Arrays.asList(new ImageProcessor[] {ip}), preprocessingSettings);
 	}
 	
 	/**
 	 * Constructor for many ImageProcessors as a List
 	 * @param ips The List of ImageProcessors to classify
-	 * @param preprocessingSettings The {@link MorphologicFilterSettings} containing the preprocessing filter choice and the corresponding matrix size given by the user
+	 * @param preprocessingSettings The List of {@link MorphologicFilterSettings} containing the preprocessing filter choices in their order and the corresponding matrix sizes given by the user
 	 * @wbp.parser.constructor
 	 */
-	public SelectionGui(List<ImageProcessor> ips, MorphologicFilterSettings preprocessingSettings) {
+	public SelectionGui(List<ImageProcessor> ips, List<MorphologicFilterSettings> preprocessingSettings) {
 		setModal(true);
 		setTitle("Einstellungen ausw\u00E4hlen");
 		setBounds(100, 100, 300, 400);
