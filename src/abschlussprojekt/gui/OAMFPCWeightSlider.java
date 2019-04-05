@@ -1,6 +1,7 @@
 package abschlussprojekt.gui;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -15,6 +16,7 @@ import abschlussprojekt.util.Util;
 import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JSeparator;
 
 public class OAMFPCWeightSlider extends JDialog {
 
@@ -32,7 +34,7 @@ public class OAMFPCWeightSlider extends JDialog {
 	public OAMFPCWeightSlider(double[] weights) {
 		setModal(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 379, 146);
+		setBounds(100, 100, 380, 150);
 		setTitle("Modifikator für Gewichtsfunktion");
 		
 		contentPane = new JPanel();
@@ -64,6 +66,10 @@ public class OAMFPCWeightSlider extends JDialog {
 			}
 		});
 		
+		JCheckBox flipBox = new JCheckBox("Gewichtsvektor umkehren?");
+		flipBox.setSelected(false);
+		settingPanel.add(flipBox);
+		
 		JButton btnOk = new JButton("OK");
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -73,9 +79,12 @@ public class OAMFPCWeightSlider extends JDialog {
 				for(int cnt = 0; cnt < size; cnt++) {
 					int idx = cnt + 1;
 					weights[cnt] = Math.pow(((double)idx)/size, exponent) - Math.pow(((double)cnt)/size, exponent);
-					System.out.println("Weight " + idx + " = " + weights[cnt]);
+					System.out.println("Weight " + idx + " = " + weights[cnt]); //DEBUG
 				}
-				System.out.println("Weightsum: " + Util.arraySumme(weights));
+				System.out.println("Weightsum: " + Util.arraySumme(weights)); //DEBUG
+				if(flipBox.isSelected()) {
+					Util.reverseArray(weights);
+				}
 				self.dispose();
 			}
 		});

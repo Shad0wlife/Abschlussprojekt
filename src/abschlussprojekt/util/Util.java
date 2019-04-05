@@ -126,9 +126,9 @@ public class Util {
 	 * @param startPathPointer A 1-element File array containing the File object of the folder the dialog should open in by default
 	 * @return The list of images in the chosen folder as List of ImagePlus
 	 */
-	public static List<ImagePlus> getImagesWithDialog(File[] startPathPointer){ //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
+	public static List<ImagePlus> getImagesWithDialog(File[] startPathPointer, String title){ //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
 		List<ImagePlus> imagePluses = new LinkedList<>();
-		FilePicker picker = new FilePicker(imagePluses, startPathPointer);
+		FilePicker picker = new FilePicker(imagePluses, startPathPointer, title);
 		picker.setVisible(true);
 		return imagePluses;
 	}
@@ -137,8 +137,8 @@ public class Util {
 	 * Opens a file picker to open a folder containing image files and returns the list of ImagePluses of the images in the chosen folder
 	 * @return The list of images in the chosen folder as List of ImagePlus
 	 */
-	public static List<ImagePlus> getImagesWithDialog(){
-		return getImagesWithDialog(new File[] {null}); //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
+	public static List<ImagePlus> getImagesWithDialog(String title){
+		return getImagesWithDialog(new File[] {null}, title); //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
 	}
 	
 	/**

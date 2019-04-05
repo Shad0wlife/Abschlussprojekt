@@ -87,7 +87,7 @@ public class OKActionListener implements ActionListener{
 		do {
 			System.out.println("Starting learning data loop."); //DEBUG
 			
-			List<ImagePlus> imagePluses = Util.getImagesWithDialog(defaultOpenPathPointer);
+			List<ImagePlus> imagePluses = Util.getImagesWithDialog(defaultOpenPathPointer, "Bitte einen Ordner mit den Lernbildern der Klasse wählen.");
 			
 			if(!imagePluses.isEmpty()) {		
 				List<int[]> spectrums = this.getSpectrumsFromImagePluses(imagePluses, size, gzt, space, preprocessingSettings);

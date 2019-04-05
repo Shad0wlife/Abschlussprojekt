@@ -20,7 +20,7 @@ public class RecognitionPluginBulk_ implements PlugIn {
 	
 	@Override
 	public void run(String arg) {		
-		List<ImagePlus> imagePluses = Util.getImagesWithDialog();
+		List<ImagePlus> imagePluses = Util.getImagesWithDialog("Bitte den Ordner mit den Testbildern wählen.");
 		
 		if(!imagePluses.isEmpty()) {
 			List<ImageProcessor> imageProcessors = get8BitImageProcessors(imagePluses);
