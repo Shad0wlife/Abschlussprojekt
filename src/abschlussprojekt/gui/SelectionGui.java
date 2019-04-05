@@ -6,7 +6,7 @@ import javax.swing.border.EmptyBorder;
 import abschlussprojekt.util.CircleSize;
 import abschlussprojekt.util.Classifier;
 import abschlussprojekt.util.GZT;
-import abschlussprojekt.util.MorphologicFilterChoice;
+import abschlussprojekt.util.MorphologicFilterSettings;
 import ij.process.ImageProcessor;
 
 import javax.swing.JComboBox;
@@ -41,17 +41,19 @@ public class SelectionGui extends JDialog {
 	/**
 	 * Constructor for one ImageProcessor
 	 * @param ip The ImageProcessor to classify
+	 * @param preprocessingSettings The {@link MorphologicFilterSettings} containing the preprocessing filter choice and the corresponding matrix size given by the user
 	 */
-	public SelectionGui(ImageProcessor ip, MorphologicFilterChoice preprocessing) {
-		this(Arrays.asList(new ImageProcessor[] {ip}), preprocessing);
+	public SelectionGui(ImageProcessor ip, MorphologicFilterSettings preprocessingSettings) {
+		this(Arrays.asList(new ImageProcessor[] {ip}), preprocessingSettings);
 	}
 	
 	/**
 	 * Constructor for many ImageProcessors as a List
 	 * @param ips The List of ImageProcessors to classify
+	 * @param preprocessingSettings The {@link MorphologicFilterSettings} containing the preprocessing filter choice and the corresponding matrix size given by the user
 	 * @wbp.parser.constructor
 	 */
-	public SelectionGui(List<ImageProcessor> ips, MorphologicFilterChoice preprocessing) {
+	public SelectionGui(List<ImageProcessor> ips, MorphologicFilterSettings preprocessingSettings) {
 		setModal(true);
 		setTitle("Einstellungen ausw\u00E4hlen");
 		setBounds(100, 100, 300, 400);
@@ -163,7 +165,7 @@ public class SelectionGui extends JDialog {
 		
 		//OK button
 		JButton btnOk = new JButton("OK");
-		btnOk.addActionListener(new OKActionListener(ips, preprocessing, this, comboBox, gztGroup, classifierGroup, dComboBox, sliderValue));
+		btnOk.addActionListener(new OKActionListener(ips, preprocessingSettings, this, comboBox, gztGroup, classifierGroup, dComboBox, sliderValue));
 		contentPane.add(btnOk);
 	}
 

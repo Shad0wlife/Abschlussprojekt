@@ -1,8 +1,5 @@
 package abschlussprojekt.util;
 
-import javax.swing.JOptionPane;
-
-import ij.IJ;
 import ij.process.ImageProcessor;
 
 public class MorphologicFilter {
@@ -10,26 +7,21 @@ public class MorphologicFilter {
 	/**
 	 * Executes a morphologic filter on the ImageProcessor, leaving a black margin
 	 * @param ip The ImageProcessor to morph
-	 * @param erode Whether the Image should be eroded. true = erode, false = dilate
+	 * @param filterSettings The {@link MorphologicFilterSettings} containing the filter choice and the corresponding matrix size
 	 */
-	public static void morph(ImageProcessor ip, MorphologicFilterChoice choice) {
-		System.out.println("Selected filter: " + choice.name());
+	public static void morph(ImageProcessor ip, MorphologicFilterSettings filterSettings) {
 		int[][] pixelArrayManipulated;
-		switch(choice) {
+		switch(filterSettings.getFilterChoice()) {
 		case EROSION:
-			pixelArrayManipulated = morphPixelArray(ip, true);
+			pixelArrayManipulated = morphPixelArray(ip, true, filterSettings.getMatrixSize());
 			break;
 		case DILATION:
-			pixelArrayManipulated = morphPixelArray(ip, false);
+			pixelArrayManipulated = morphPixelArray(ip, false, filterSettings.getMatrixSize());
 			break;
 		default:
 			return;
 		}
-		if(pixelArrayManipulated != null) {
-			writeArrayToImageProcessor(ip, pixelArrayManipulated);
-		}else {
-			JOptionPane.showMessageDialog(null, "Morphologischer Filter abgebrochen.");
-		}
+		writeArrayToImageProcessor(ip, pixelArrayManipulated);
 	}
 	
 	/**
@@ -38,15 +30,10 @@ public class MorphologicFilter {
 	 * @param erode whether to erode or dilate the image
 	 * @return An int[][] with the morphed pixel data
 	 */
-	private static int[][] morphPixelArray(ImageProcessor ip, boolean erode){
+	private static int[][] morphPixelArray(ImageProcessor ip, boolean erode, int matrixSize){
 		int width = ip.getWidth();
 		int height = ip.getHeight();
 		int[][] pixelArrayManipulated = new int[width][height];
-
-		int matrixSize = (int)IJ.getNumber("Wie groﬂ soll die morphologische Matrix sein?", 3); // Input of matrix dimensions
-		if(matrixSize == IJ.CANCELED) {
-			return null;
-		}
 		
 		int min, max;
 		for (int w = (matrixSize/2); w < width-(matrixSize/2); w++) {
