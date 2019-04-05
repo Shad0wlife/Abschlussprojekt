@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 import abschlussprojekt.util.CircleSize;
 import abschlussprojekt.util.Classifier;
 import abschlussprojekt.util.GZT;
+import abschlussprojekt.util.MorphologicFilterChoice;
 import ij.process.ImageProcessor;
 
 import javax.swing.JComboBox;
@@ -41,8 +42,8 @@ public class SelectionGui extends JDialog {
 	 * Constructor for one ImageProcessor
 	 * @param ip The ImageProcessor to classify
 	 */
-	public SelectionGui(ImageProcessor ip) {
-		this(Arrays.asList(new ImageProcessor[] {ip}));
+	public SelectionGui(ImageProcessor ip, MorphologicFilterChoice preprocessing) {
+		this(Arrays.asList(new ImageProcessor[] {ip}), preprocessing);
 	}
 	
 	/**
@@ -50,7 +51,7 @@ public class SelectionGui extends JDialog {
 	 * @param ips The List of ImageProcessors to classify
 	 * @wbp.parser.constructor
 	 */
-	public SelectionGui(List<ImageProcessor> ips) {
+	public SelectionGui(List<ImageProcessor> ips, MorphologicFilterChoice preprocessing) {
 		setModal(true);
 		setTitle("Einstellungen ausw\u00E4hlen");
 		setBounds(100, 100, 300, 400);
@@ -162,7 +163,7 @@ public class SelectionGui extends JDialog {
 		
 		//OK button
 		JButton btnOk = new JButton("OK");
-		btnOk.addActionListener(new OKActionListener(ips, this, comboBox, gztGroup, classifierGroup, dComboBox, sliderValue));
+		btnOk.addActionListener(new OKActionListener(ips, preprocessing, this, comboBox, gztGroup, classifierGroup, dComboBox, sliderValue));
 		contentPane.add(btnOk);
 	}
 

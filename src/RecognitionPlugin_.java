@@ -21,7 +21,7 @@ public class RecognitionPlugin_ implements PlugInFilter {
 		MorphologicFilterChoice morphChoice = Util.getMorphChoice();
 		MorphologicFilter.morph(ip, morphChoice);
 		
-		SelectionGui gui = new SelectionGui(ip); //Does this chain make sense?
+		SelectionGui gui = new SelectionGui(ip, morphChoice); //Does this chain make sense?
 		gui.setVisible(true);
 	}
 		

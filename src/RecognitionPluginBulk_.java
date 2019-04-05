@@ -26,7 +26,7 @@ public class RecognitionPluginBulk_ implements PlugIn {
 				MorphologicFilter.morph(imageProcessor, morphChoice);
 			}
 			
-			SelectionGui gui = new SelectionGui(imageProcessors); //Does this chain make sense?
+			SelectionGui gui = new SelectionGui(imageProcessors, morphChoice); //Does this chain make sense?
 			gui.setVisible(true);
 		}else {
 			IJ.error("Keine Testbilder ausgewählt!", "Es müssen Testbilder ausgewählt werden, welche klassifiziert werden sollen.");

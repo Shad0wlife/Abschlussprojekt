@@ -26,6 +26,8 @@ import abschlussprojekt.util.Classifier;
 import abschlussprojekt.util.Colorspace;
 import abschlussprojekt.util.Debug;
 import abschlussprojekt.util.GZT;
+import abschlussprojekt.util.MorphologicFilter;
+import abschlussprojekt.util.MorphologicFilterChoice;
 import abschlussprojekt.util.Util;
 import abschlussprojekt.util.math.ImageSpectrum;
 import ij.ImagePlus;
@@ -34,6 +36,7 @@ import ij.process.ImageProcessor;
 public class OKActionListener implements ActionListener{
 
 	private List<ImageProcessor> imageProcessors;
+	private MorphologicFilterChoice preprocessing;
 	private JComboBox<CircleSize> sizeComboBox;
 	private JDialog parent;
 	private ButtonGroup gztGroup;
@@ -41,8 +44,9 @@ public class OKActionListener implements ActionListener{
 	private JComboBox<DValue> dComboBox;
 	private double pce;
 	
-	public OKActionListener(List<ImageProcessor> imageProcessors, JDialog parent, JComboBox<CircleSize> sizeComboBox, ButtonGroup gztGroup, ButtonGroup classifierGroup, JComboBox<DValue> dComboBox, double pce) {
+	public OKActionListener(List<ImageProcessor> imageProcessors, MorphologicFilterChoice preprocessing, JDialog parent, JComboBox<CircleSize> sizeComboBox, ButtonGroup gztGroup, ButtonGroup classifierGroup, JComboBox<DValue> dComboBox, double pce) {
 		this.imageProcessors = imageProcessors;
+		this.preprocessing = preprocessing;
 		this.parent = parent;
 		this.sizeComboBox = sizeComboBox;
 		this.gztGroup = gztGroup;
@@ -86,7 +90,7 @@ public class OKActionListener implements ActionListener{
 			List<ImagePlus> imagePluses = Util.getImagesWithDialog(defaultOpenPathPointer);
 			
 			if(!imagePluses.isEmpty()) {		
-				List<int[]> spectrums = this.getSpectrumsFromImagePluses(imagePluses, size, gzt, space);
+				List<int[]> spectrums = this.getSpectrumsFromImagePluses(imagePluses, size, gzt, space, preprocessing);
 				classData.add(spectrums);
 			}
 		}while(checkForNextClass());
@@ -130,10 +134,10 @@ public class OKActionListener implements ActionListener{
 	 * @param space The {@link Colorspace} that should be used in case of RGB Images in the selection
 	 * @return The list of the image spectrums as a List of int[]
 	 */
-	private List<int[]> getSpectrumsFromImagePluses(List<ImagePlus> imagePluses, CircleSize size, GZT gzt, Colorspace space){
+	private List<int[]> getSpectrumsFromImagePluses(List<ImagePlus> imagePluses, CircleSize size, GZT gzt, Colorspace space, MorphologicFilterChoice preprocessing){
 		List<int[]> spectrums = new LinkedList<>();
 		for (ImagePlus imagePlus : imagePluses) {
-			spectrums.add(this.getSpectrumFromImagePlus(imagePlus, size, gzt, space));
+			spectrums.add(this.getSpectrumFromImagePlus(imagePlus, size, gzt, space, preprocessing));
 		}
 		return spectrums;
 	}
@@ -146,8 +150,11 @@ public class OKActionListener implements ActionListener{
 	 * @param space The {@link Colorspace} that should be used in case of RGB Images in the selection
 	 * @return The image spectrum as an int[]
 	 */
-	private int[] getSpectrumFromImagePlus(ImagePlus imagePlus, CircleSize size, GZT gzt, Colorspace space) {
+	private int[] getSpectrumFromImagePlus(ImagePlus imagePlus, CircleSize size, GZT gzt, Colorspace space, MorphologicFilterChoice preprocessing) {
 		ImageProcessor imageProcessor = Util.get8BitImageProcessor(imagePlus, space);
+		
+		MorphologicFilter.morph(imageProcessor, preprocessing);
+		
 		return ImageSpectrum.getImageGSpectrum(imageProcessor, size, gzt);
 	}
 	
