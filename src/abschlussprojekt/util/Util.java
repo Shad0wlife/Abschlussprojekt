@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import abschlussprojekt.gui.FilePicker;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
@@ -83,6 +85,24 @@ public class Util {
 			double x = arr[cnt];
 			arr[cnt] = arr[arr.length - 1 - cnt];
 			arr[arr.length - 1 - cnt] = x;
+		}
+	}
+	
+	/**
+	 * Asks the user whether he wants to use a morphologic filter on the images.
+	 * @return The {@link MorphologicFilterChoice} selected by the user
+	 */
+	public static MorphologicFilterChoice getMorphChoice() {
+		String[] options = {"Erosion", "Dilatation", "keine"};
+		int choice = JOptionPane.showOptionDialog(null, "Welche morphologische Operation soll auf die Bilddaten angewendet werden?", "Morphologische Operation", 
+				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+		switch(choice) {
+		case JOptionPane.YES_OPTION:
+			return MorphologicFilterChoice.EROSION;
+		case JOptionPane.NO_OPTION:
+			return MorphologicFilterChoice.DILATION;
+		default:
+			return MorphologicFilterChoice.NONE;
 		}
 	}
 	
