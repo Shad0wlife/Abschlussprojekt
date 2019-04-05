@@ -1,6 +1,6 @@
 package abschlussprojekt.util.math;
 
-public class MatrixOperations {
+public class MatrixOperations { //TODO Kommentare übersetzen
 
 	/**
 	 * Multiplies a matrix with a vector
@@ -10,6 +10,10 @@ public class MatrixOperations {
 	 */
 	public static int[] matrixVectorProduct(int[][] matrix, int[] vector)
     {
+		if(!isMatrixRectangular(matrix)) {
+			throw new IllegalArgumentException("The matrix is a jagged array and thus not rectangular. Matrices must be rectangular.");
+		}
+		
         int width = getMatrixWidth(matrix);
         int height = getMatrixHeight(matrix);
         int length = vector.length;
@@ -31,9 +35,7 @@ public class MatrixOperations {
         }
         else
         {
-        	//TODO So lassen, null zurückgeben oder Exception werfen?
-            int[] result = new int[0];
-            return result; // Fehler zurückgeben (korrekt?)
+        	throw new IllegalArgumentException("The matrix dimensions do not match the vector dimensions required for multiplication.");
         }
     }
     
@@ -41,10 +43,13 @@ public class MatrixOperations {
     * Calculates the kronecker-product of two matrices.
     * @param matA First matrix.
     * @param matB Second matrix.
-    * @return The reuslting kronecker-product matrix.
+    * @return The resulting kronecker-product matrix.
     */
     public static int[][] kroneckerProduct(int[][] matA, int[][] matB)
     {
+    	if(!isMatrixRectangular(matA) || !isMatrixRectangular(matB)) {
+			throw new IllegalArgumentException("A matrix is a jagged array and thus not rectangular. Matrices must be rectangular.");
+		}
         // Breite und Höhe der Eingangsmatritzen anfordern
         int widthA = getMatrixWidth(matA);
         int heightA = getMatrixHeight(matA);
@@ -95,6 +100,21 @@ public class MatrixOperations {
     {
         int height = matrix.length;
         return height;
+    }
+    
+    /**
+     * Checks whether a matrix is rectangular by checking that all line lengths are equal
+     * @param matrix The matrix to check
+     * @return Whether the matrix is rectangular
+     */
+    public static boolean isMatrixRectangular(int[][] matrix) {
+    	int width = matrix[0].length;
+    	for(int cnt = 1; cnt < matrix.length; cnt++) {
+    		if(matrix[cnt].length != width) {
+    			return false;
+    		}
+    	}
+    	return true;
     }
 	
 }

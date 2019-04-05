@@ -16,13 +16,13 @@ public class FileActionListener implements ActionListener {
 	private JDialog parent;
 	private JFileChooser fileChooser;
 	private List<ImagePlus> images;
-	private File[] path;
+	private File[] pathPointer;
 	
-	public FileActionListener(JDialog parent, JFileChooser fileChooser, List<ImagePlus> images, File[] path) {
+	public FileActionListener(JDialog parent, JFileChooser fileChooser, List<ImagePlus> images, File[] pathPointer) {
 		this.parent = parent;
 		this.fileChooser = fileChooser;
 		this.images = images;
-		this.path = path;
+		this.pathPointer = pathPointer;
 	}
 
 	@Override
@@ -44,21 +44,32 @@ public class FileActionListener implements ActionListener {
 			return;
 		}
 		
-		path[0] = selected.getParentFile();
+		pathPointer[0] = selected.getParentFile();
 		
 		File[] contents = selected.listFiles();
 		
-		for (File file : contents) {
+		this.openImages(contents);
+
+		this.parent.dispose();
+	}
+	
+	/**
+	 * Opens the images from the files found in the specified directory
+	 * @param files The array of files found in the specified directory
+	 */
+	private void openImages(File[] files) {
+		for (File file : files) {
 			if(file.isFile()) {
 				ImagePlus image = IJ.openImage(file.getAbsolutePath());
+				
+				//DEBUG
 				System.out.println("Image " + file.getName() + " opened!");
+				
 				if(image != null) {
 					this.images.add(image);
 				}
 			}
 		}
-
-		this.parent.dispose();
 	}
 
 }

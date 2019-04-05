@@ -1,50 +1,38 @@
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import abschlussprojekt.gui.FilePicker;
 import abschlussprojekt.gui.SelectionGui;
 import abschlussprojekt.util.Colorspace;
+import abschlussprojekt.util.Util;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.PlugIn;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 
 public class RecognitionPluginBulk_ implements PlugIn {
 
 	@Override
 	public void run(String arg) {
-		File[] path = {null}; //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
-
-		Colorspace space = Colorspace.BT2020; //TODO Gui picker dafür anstatt es im code zu machen?
-		
-		List<ImagePlus> imagePluses = new LinkedList<>();
-		List<ImageProcessor> imageProcessors = new LinkedList<>();
-		FilePicker picker = new FilePicker(imagePluses, path);
-		picker.setVisible(true);
+		List<ImagePlus> imagePluses = Util.getImagesWithDialog();
 		
 		if(!imagePluses.isEmpty()) {			
-			for (ImagePlus imagePlus : imagePluses) {
-				ImageProcessor imageProcessor = imagePlus.getProcessor();
-				if(!(imageProcessor instanceof ByteProcessor)) {
-					if(imageProcessor instanceof ColorProcessor) {
-						((ColorProcessor)imageProcessor).setRGBWeights(space.getFactorR(), space.getFactorG(), space.getFactorB());
-					}
-					imageProcessor = imageProcessor.convertToByteProcessor(true);
-					System.out.println("Converted image!");
-				}
-				imageProcessors.add(imageProcessor);
-			}
+			List<ImageProcessor> imageProcessors = get8BitImageProcessors(imagePluses);
+			SelectionGui gui = new SelectionGui(imageProcessors); //Does this chain make sense?
+			gui.setVisible(true);
 		}else {
 			IJ.error("Keine Testbilder ausgewählt!", "Es müssen Testbilder ausgewählt werden, welche klassifiziert werden sollen.");
 			return;
 		}
-		
-		SelectionGui gui = new SelectionGui(imageProcessors); //Does this chain make sense?
-		gui.setVisible(true);
-
+	}
+	
+	private List<ImageProcessor> get8BitImageProcessors(List<ImagePlus> imagePluses){
+		Colorspace colorspace = Colorspace.BT2020; //TODO selection gui?
+		List<ImageProcessor> imageProcessors = new LinkedList<>();
+		for (ImagePlus imagePlus : imagePluses) {
+			ImageProcessor imageProcessor = Util.get8BitImageProcessor(imagePlus, colorspace);
+			imageProcessors.add(imageProcessor);
+		}
+		return imageProcessors;
 	}
 
 }

@@ -1,43 +1,23 @@
 package abschlussprojekt.classification.mfpc;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import abschlussprojekt.classification.DValue;
 import abschlussprojekt.classification.FPC_Derivate;
 
-public class MFPC implements FPC_Derivate {
-	
-	private List<MFPCMembershipFunction> membershipFunctions;
+public class MFPC extends FPC_Derivate {
 	
 	public MFPC(DValue D, double pce, List<List<int[]>> learningVectors){
-		membershipFunctions = new LinkedList<>();
+		super();
 		learn(D, pce, learningVectors);
 	}
 
-	@Override
-	public int[] classify(int[] featureVector) {
-		int size = membershipFunctions.size();
-		double[] memberships = new double[size]; //DEBUG
-		double max = Double.NEGATIVE_INFINITY;
-		int maxIdx = -1;
-		int[] result = new int[size];
-		
-		for(int cnt = 0; cnt < size; cnt++) {
-			double membership = membershipFunctions.get(cnt).membership(featureVector);
-			System.out.println("Membership " + cnt + ": " + membership);
-			memberships[cnt] = membership; //DEBUG
-			
-			if(membership > max) {
-				max = membership;
-				maxIdx = cnt;
-			}
-		}
-		result[maxIdx] = 1;
-		
-		return result;
-	}
-
+	/**
+	 * Learns the membership functions for the feature vectors
+	 * @param D The {@link DValue} used in the membership function
+	 * @param pce The pce used in the membership function
+	 * @param learningVectors The vectors containing the learning data
+	 */
 	private void learn(DValue D, double pce, List<List<int[]>> learningVectors) {
 		for(List<int[]> learningData : learningVectors) {
 			membershipFunctions.add(new MFPCMembershipFunction(D, pce, learningData));

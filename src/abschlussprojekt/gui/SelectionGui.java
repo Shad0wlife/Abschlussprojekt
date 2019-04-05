@@ -3,7 +3,6 @@ package abschlussprojekt.gui;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import abschlussprojekt.classification.FPC_Derivate;
 import abschlussprojekt.util.CircleSize;
 import abschlussprojekt.util.Classifier;
 import abschlussprojekt.util.GZT;
@@ -17,14 +16,12 @@ import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.BoxLayout;
 import java.awt.Component;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import abschlussprojekt.classification.DValue;
-import javax.swing.JTextField;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -42,14 +39,16 @@ public class SelectionGui extends JDialog {
 	
 	/**
 	 * Constructor for one ImageProcessor
-	 * @param ip
+	 * @param ip The ImageProcessor to classify
 	 */
 	public SelectionGui(ImageProcessor ip) {
 		this(Arrays.asList(new ImageProcessor[] {ip}));
 	}
 	
 	/**
-	 * Create the frame.
+	 * Constructor for many ImageProcessors as a List
+	 * @param ips The List of ImageProcessors to classify
+	 * @wbp.parser.constructor
 	 */
 	public SelectionGui(List<ImageProcessor> ips) {
 		setModal(true);
@@ -105,6 +104,7 @@ public class SelectionGui extends JDialog {
 		
 		JSlider pceSlider = new JSlider();
 		JLabel lblSliderValue = new JLabel(String.format("PCE = %.2f", sliderValue));
+		pceSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
 		pceSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				sliderValue = pceSlider.getValue()/100.0;
@@ -113,8 +113,6 @@ public class SelectionGui extends JDialog {
 			}
 		});
 		settingsPanel.add(pceSlider);
-		pceSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
-		
 		settingsPanel.add(lblSliderValue);
 		
 		JSeparator separator_1 = new JSeparator();

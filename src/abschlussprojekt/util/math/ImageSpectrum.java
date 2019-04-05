@@ -5,10 +5,19 @@ import java.util.List;
 
 import abschlussprojekt.util.Util;
 import abschlussprojekt.util.CircleSize;
+import abschlussprojekt.util.Debug;
 import abschlussprojekt.util.GZT;
 import ij.process.ImageProcessor;
 
 public class ImageSpectrum {
+	
+	/**
+	 * Gets the summed G-Spectrum of an image by its ImageProcessor, a given Ccircle mask size and a given type of GZT
+	 * @param ip The ImageProcessor containing the image data to generate the spectrum for
+	 * @param size The {@link CircleSize} to be used for the circular mask in the transformation
+	 * @param gzt The {@link GZT} to be used in the transformation
+	 * @return The image's G-Spectrum as an int[]
+	 */
 	public static int[] getImageGSpectrum(ImageProcessor ip, CircleSize size, GZT gzt) {
 		int[][] mask = BresenhamCircle.generateCircleInteger(size.getDiameter());
 		List<int[]> vectors = new LinkedList<>();
@@ -24,17 +33,11 @@ public class ImageSpectrum {
 		
 		int[][] gztMatrix = GZTMatrixGenerator.getGZT(gzt, Util.log2(size.getCircumference()));
 		
-		//DEBUG
-		//Util.printArrayOfArrays(gztMatrix);
-		
 		vectors.forEach(vector -> spectrums.add(GZTMatrixGenerator.gSpectrum(MatrixOperations.matrixVectorProduct(gztMatrix, vector))));
 		
-		//DEBUG
-		//Util.printListOfArrays(spectrums);
+		int[] ags = GZTMatrixGenerator.cumulativeGSpectrum(spectrums);
 		
-		int[] ags = GZTMatrixGenerator.averageGSpectrum(spectrums);
-		
-		Util.printArray(ags);
+		Debug.printArray(ags); //DEBUG
 		return ags;
 	}
 	
@@ -47,7 +50,7 @@ public class ImageSpectrum {
 	 * @param offsetY The y-offset in the picture the mask should be read from
 	 * @return An array of the values on the circle, read clockwise from the top in the middle.
 	 */
-	private static int[] walkCircle(ImageProcessor ip, int[][] mask, CircleSize size, int offsetX, int offsetY) {
+	private static int[] walkCircle(ImageProcessor ip, int[][] mask, CircleSize size, int offsetX, int offsetY) { //TODO Refactor, option for circle painting
 		int[] vector = new int[size.getCircumference()];
 		int[][] maskCopy = Util.deepCopy2D(mask);
 		int vectorIndex = 0;

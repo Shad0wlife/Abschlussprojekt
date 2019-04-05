@@ -5,8 +5,14 @@ import java.util.List;
 import abschlussprojekt.util.Util;
 import abschlussprojekt.util.GZT;
 
-public class GZTMatrixGenerator {
+public class GZTMatrixGenerator { //TODO Refactoring
 
+	/**
+	 * Returns a GZT matrix based on the passed GZT enum selection and the passed exponent of the dimensions
+	 * @param gzt The {@link GZT} choice the matrix should be generated for
+	 * @param exponent The exponent of 2 used for calculating the matrix dimensions
+	 * @return The created corresponding GZT matrix
+	 */
 	public static int[][] getGZT(GZT gzt, int exponent){
 		switch(gzt) {
 		case SWT:
@@ -90,8 +96,8 @@ public class GZTMatrixGenerator {
 						tempLineArray[cnt] = 0;
 					}
 				}
-			//TODO Flip this for Lohweg/Dipl core difference
 			}else if(currentSubBlockDimension == 2) {
+				//TODO Flip this for Lohweg/Dipl core difference
 				tempLineArray[0] = -1;
 				tempLineArray[1] = 0;
 			}else {
@@ -139,9 +145,9 @@ public class GZTMatrixGenerator {
 	}
 	
 	/**
-	 * 
-	 * @param transformed
-	 * @return
+	 * Creates a G-Spectrum from a GZ-transformed vector
+	 * @param transformed The transformed vector of which the spectrum shall be generated
+	 * @return The G-Spectrum generated from the vector
 	 */
 	public static int[] gSpectrum(int[] transformed) {
 		int inLength = transformed.length;
@@ -166,7 +172,12 @@ public class GZTMatrixGenerator {
 		return spectrum;
 	}
 	
-	public static int[] averageGSpectrum(List<int[]> spectrums) {
+	/**
+	 * Creates a G-Spectrum by summing up the elements of a list of G-Spectrums
+	 * @param spectrums The spectrums to sum together
+	 * @return The summed G-Spectrum
+	 */
+	public static int[] cumulativeGSpectrum(List<int[]> spectrums) {
 		int[] res = new int[spectrums.get(0).length];
 		for (int[] arr : spectrums) {
 			res = Util.addVectors(res, arr);

@@ -24,7 +24,7 @@ public class OAMFPCWeightSlider extends JDialog {
 	private static final long serialVersionUID = -5891252839326238587L;
 	private final JPanel contentPane;
 	private double sliderValue = 0.5;
-	private OAMFPCWeightSlider self;
+	private OAMFPCWeightSlider self; //used for self referential access from anonymous inner classes
 
 	/**
 	 * Create the dialog.
@@ -33,6 +33,7 @@ public class OAMFPCWeightSlider extends JDialog {
 		setModal(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 379, 146);
+		setTitle("Modifikator für Gewichtsfunktion");
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -79,6 +80,7 @@ public class OAMFPCWeightSlider extends JDialog {
 			}
 		});
 		contentPane.add(btnOk);
+		
 		self = this;
 	}
 

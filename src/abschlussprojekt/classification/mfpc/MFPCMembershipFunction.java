@@ -1,59 +1,29 @@
 package abschlussprojekt.classification.mfpc;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import abschlussprojekt.classification.DValue;
-import abschlussprojekt.classification.FeatureMembershipFunction;
+import abschlussprojekt.classification.MembershipFunction;
 import abschlussprojekt.util.Util;
 
-public class MFPCMembershipFunction {
-	DValue D;
-	double pce;
-	double C;
-	FeatureMembershipFunction[] fmfs;
-	final int vectorSize;
+public class MFPCMembershipFunction extends MembershipFunction{
 	
 	public MFPCMembershipFunction(DValue D, double pce, List<int[]> featureVectors) {
-		if(pce < 0.0 || pce > 1.0) {
-			throw new IllegalArgumentException("pce must be in the interval [0,1]");
-		}
-		this.pce = pce;
-		this.D = D;
-		vectorSize = featureVectors.get(0).length;
-		this.learn(featureVectors);
+		super(D, pce, featureVectors);
 	}
 	
-	private void learn(List<int[]> featureVectors) {
-		fmfs = new FeatureMembershipFunction[vectorSize];
-		
-		@SuppressWarnings("unchecked")
-		List<Integer>[] featureLists = new LinkedList[vectorSize];
-		for (int cnt = 0; cnt < featureLists.length; cnt++) {
-			featureLists[cnt] = new LinkedList<Integer>();
-		}
-		
-		featureVectors.forEach(arr -> {
-			for(int cnt = 0; cnt < arr.length; cnt++) {
-				featureLists[cnt].add(Integer.valueOf(arr[cnt]));
-			}
-		});
-		
-		for (int cnt = 0; cnt < fmfs.length; cnt++) {
-			fmfs[cnt] = new FeatureMembershipFunction(D, pce, featureLists[cnt]);
-		}
-	}
-	
+	/**
+	 * Calculates the class membership value of a feature vector
+	 * @param featureVector The feature vector to calculate the class membership of
+	 * @return The class membership value of the feature vector
+	 */
+	@Override
 	public double membership(int[] featureVector) {
 		if(featureVector.length != vectorSize) {
 			throw new IllegalArgumentException("The feature vector does not match the learning data vectors in size.");
 		}
-		double[] distances = new double[vectorSize];
-		for(int cnt = 0; cnt < vectorSize; cnt++) {
-			double distance = fmfs[cnt].distance(featureVector[cnt]);
-			System.out.println("Distance feature index " + cnt + " is: " + distance);
-			distances[cnt] =  distance;
-		}
+		double[] distances = getDistances(featureVector);
+		
 		return Math.pow(2.0, (-1.0 * Util.arraySumme(distances)) / vectorSize);
 	}
 	

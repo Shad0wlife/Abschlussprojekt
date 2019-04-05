@@ -29,6 +29,10 @@ public enum CircleSize {
 		return this.circumference;
 	}
 	
+	/**
+	 * Returns the G-Spectrum size resulting from the selected size's circumference
+	 * @return
+	 */
 	public int getSpectrumSize() {
 		return Util.log2(this.getCircumference()) + 1;
 	}

@@ -1,20 +1,18 @@
 package abschlussprojekt.gui;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.io.File;
-import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import ij.ImagePlus;
-
 public class FileSaver extends JDialog {
 
+	/**
+	 * Generated Serial Version UID
+	 */
+	private static final long serialVersionUID = 1135156175205026392L;
 	private JPanel contentPane;
 
 	/**

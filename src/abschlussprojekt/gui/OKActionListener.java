@@ -24,154 +24,226 @@ import abschlussprojekt.util.CSVWriter;
 import abschlussprojekt.util.CircleSize;
 import abschlussprojekt.util.Classifier;
 import abschlussprojekt.util.Colorspace;
+import abschlussprojekt.util.Debug;
 import abschlussprojekt.util.GZT;
 import abschlussprojekt.util.Util;
 import abschlussprojekt.util.math.ImageSpectrum;
 import ij.ImagePlus;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 
 public class OKActionListener implements ActionListener{
 
-	private List<ImageProcessor> ips;
-	private JComboBox<CircleSize> comboBox;
+	private List<ImageProcessor> imageProcessors;
+	private JComboBox<CircleSize> sizeComboBox;
 	private JDialog parent;
 	private ButtonGroup gztGroup;
 	private ButtonGroup classifierGroup;
 	private JComboBox<DValue> dComboBox;
 	private double pce;
 	
-	public OKActionListener(List<ImageProcessor> ips, JDialog parent, JComboBox<CircleSize> cb, ButtonGroup gztGroup, ButtonGroup classifierGroup, JComboBox<DValue> dval, double pce) {
-		this.ips = ips;
+	public OKActionListener(List<ImageProcessor> imageProcessors, JDialog parent, JComboBox<CircleSize> sizeComboBox, ButtonGroup gztGroup, ButtonGroup classifierGroup, JComboBox<DValue> dComboBox, double pce) {
+		this.imageProcessors = imageProcessors;
 		this.parent = parent;
-		this.comboBox = cb;
+		this.sizeComboBox = sizeComboBox;
 		this.gztGroup = gztGroup;
 		this.classifierGroup = classifierGroup;
-		this.dComboBox = dval;
+		this.dComboBox = dComboBox;
 		this.pce = pce;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		CircleSize size = (CircleSize)comboBox.getSelectedItem();
-		Classifier classifier = null;
+		//Get settings from GUI elements
+		CircleSize size = (CircleSize)sizeComboBox.getSelectedItem();
+		Classifier classifierType = null;
 		DValue D = (DValue)dComboBox.getSelectedItem();
 		GZT gzt = null;
 		
-		System.out.println("OKAction performed");
-		Enumeration<AbstractButton> cGroupElements = classifierGroup.getElements();
-		while(cGroupElements.hasMoreElements()) {
-			JRadioButton button = (JRadioButton)cGroupElements.nextElement();
-			if(button.isSelected()) {
-				classifier = Classifier.valueOf(button.getText());
-			}
-			System.out.println("LOOOP");
-		}
-		
-		Enumeration<AbstractButton> gGroupElements = gztGroup.getElements();
-		while(gGroupElements.hasMoreElements()) {
-			JRadioButton button = (JRadioButton)gGroupElements.nextElement();
-			if(button.isSelected()) {
-				gzt = GZT.valueOf(button.getText());
-			}
-		}
-		
-		if(classifier == null) {
+		classifierType = getEnumChoiceFromButtonGroup(Classifier.class, classifierGroup);
+		if(classifierType == null) {
 			System.err.println("No Classifier chosen! Aborting.");
 			return;
 		}
+		
+		gzt = getEnumChoiceFromButtonGroup(GZT.class, gztGroup);
 		if(gzt == null) {
 			System.err.println("No GZT chosen! Aborting.");
 			return;
 		}
 		
-		System.out.println("Classifier: " + classifier.name());
+		//DEBUG
+		System.out.println("Classifier: " + classifierType.name());
 		System.out.println("GZT: " + gzt.name());
 		
+		//Get classification data from the learning images
 		List<List<int[]>> classData = new ArrayList<>();
-		
-		boolean next = false;
-		File[] path = {null}; //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
-
+		File[] defaultOpenPathPointer = {null}; //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
 		Colorspace space = Colorspace.BT2020; //TODO Gui picker dafür anstatt es im code zu machen?
-		String[] options = {"Ja.", "Nein."};
 		
 		do {
-			System.out.println("Starting learn loop.");
+			System.out.println("Starting learning data loop."); //DEBUG
 			
-			List<ImagePlus> imagePluses = new LinkedList<>();
-			List<int[]> spectrums = new LinkedList<>();
-			FilePicker picker = new FilePicker(imagePluses, path);
-			picker.setVisible(true);
+			List<ImagePlus> imagePluses = Util.getImagesWithDialog(defaultOpenPathPointer);
 			
-			if(!imagePluses.isEmpty()) {			
-				for (ImagePlus imagePlus : imagePluses) {
-					ImageProcessor imageProcessor = imagePlus.getProcessor();
-					if(!(imageProcessor instanceof ByteProcessor)) {
-						if(imageProcessor instanceof ColorProcessor) {
-							((ColorProcessor)imageProcessor).setRGBWeights(space.getFactorR(), space.getFactorG(), space.getFactorB());
-						}
-						imageProcessor = imageProcessor.convertToByteProcessor(true);
-						System.out.println("Converted image!");
-					}
-					int[] imageSpectrum = ImageSpectrum.getImageGSpectrum(imageProcessor, size, gzt);
-					spectrums.add(imageSpectrum);
-				}
-				
+			if(!imagePluses.isEmpty()) {		
+				List<int[]> spectrums = this.getSpectrumsFromImagePluses(imagePluses, size, gzt, space);
 				classData.add(spectrums);
 			}
-			
-			int selected = JOptionPane.showOptionDialog(parent, "Eine weitere Klasse einführen?", "Weitere Klasse?", 
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-			if(selected == JOptionPane.YES_OPTION) {
-				next = true;
-			}else {
-				next = false;
-			}
-		}while(next);
+		}while(checkForNextClass());
 		
-		FPC_Derivate classifierObj;
-		double[] weights;
-		OAMFPCWeightSlider sliderGui;
-		switch(classifier) {
-		case MFPC:
-			classifierObj = new MFPC(D, this.pce, classData);
-			break;
-		case OAMFPC:
-			weights = new double[size.getSpectrumSize()];
-			sliderGui = new OAMFPCWeightSlider(weights);
-			sliderGui.setVisible(true);
-			classifierObj = new OAMFPC(D, this.pce, classData, weights);
-			break;
-		default:
-			return;
-		}
+		//Prepare and do Classification
+		FPC_Derivate classifierObj = this.getClassifierInstance(classifierType, D, this.pce, size, classData);
 		
-		System.out.println("\r\nTarget Spectrums");
-		List<int[]> classifications = new LinkedList<>();
-		for(int cnt = 0; cnt < ips.size(); cnt++) {
-			int[] ags = ImageSpectrum.getImageGSpectrum(this.ips.get(cnt), size, gzt);
-
-			classifications.add(classifierObj.classify(ags));
-		}
+		List<int[]> classifications = classifyImages(imageProcessors, classifierObj, size, gzt);
 		
-		Util.printListOfIntArrays(classifications);
+		//DEBUG
+		Debug.printListOfIntArrays(classifications);
 		
-		JFileChooser fileSaver = new JFileChooser(path[0]);
-		switch(fileSaver.showSaveDialog(parent)) {
-		case JFileChooser.APPROVE_OPTION:
-			File selected = fileSaver.getSelectedFile();
-			CSVWriter writer = new CSVWriter(selected);
-			writer.write(classifications);
-			JOptionPane.showMessageDialog(parent, "Ergebnisse gespeichert.");
-			break;
-		default:
-			JOptionPane.showMessageDialog(parent, "Ergebnisse NICHT gespeichert.");
-			break;
-		}
+		//Save results
+		saveDataToCSV(defaultOpenPathPointer[0], classifications);
 
 		this.parent.dispose();
+	}
+	
+	
+	/**
+	 * Gets the selected {@link JRadioButton} from a {@link ButtonGroup}
+	 * @param group The ButtonGroup to return the selection from.
+	 * @return The selected JRadioButton
+	 */
+	private JRadioButton getSelectedButtonFromGroup(ButtonGroup group) {
+		Enumeration<AbstractButton> groupElements = group.getElements();
+		while(groupElements.hasMoreElements()) {
+			JRadioButton button = (JRadioButton)groupElements.nextElement();
+			if(button.isSelected()) {
+				return button;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets a list of image spectrums from a List of Images with given settings.
+	 * @param imagePluses The list of images to get the spectrums from.
+	 * @param size The {@link CircleSize} selection used for the transformation
+	 * @param gzt The {@link GZT} selection used for the transformation
+	 * @param space The {@link Colorspace} that should be used in case of RGB Images in the selection
+	 * @return The list of the image spectrums as a List of int[]
+	 */
+	private List<int[]> getSpectrumsFromImagePluses(List<ImagePlus> imagePluses, CircleSize size, GZT gzt, Colorspace space){
+		List<int[]> spectrums = new LinkedList<>();
+		for (ImagePlus imagePlus : imagePluses) {
+			spectrums.add(this.getSpectrumFromImagePlus(imagePlus, size, gzt, space));
+		}
+		return spectrums;
+	}
+	
+	/**
+	 * Gets an image spectrum form an Image with given settings
+	 * @param imagePlus The image to get the spectrum from
+	 * @param size The {@link CircleSize} selection used for the transformation
+	 * @param gzt The {@link GZT} selection used for the transformation
+	 * @param space The {@link Colorspace} that should be used in case of RGB Images in the selection
+	 * @return The image spectrum as an int[]
+	 */
+	private int[] getSpectrumFromImagePlus(ImagePlus imagePlus, CircleSize size, GZT gzt, Colorspace space) {
+		ImageProcessor imageProcessor = Util.get8BitImageProcessor(imagePlus, space);
+		return ImageSpectrum.getImageGSpectrum(imageProcessor, size, gzt);
+	}
+	
+	/**
+	 * Asks the User whether another class of learning data should be created
+	 * @return The user's choice
+	 */
+	private boolean checkForNextClass() {
+		final String[] options = {"Ja.", "Nein."};
+		int selected = JOptionPane.showOptionDialog(parent, "Eine weitere Klasse einführen?", "Weitere Klasse?", 
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		if(selected == JOptionPane.YES_OPTION) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Opens a user dialog to create the weight vector for the OAMFPC classification
+	 * @param size The Circlesize used for feature generation and thus feature vector size.
+	 * @return The vector of generated OAMFPC weights as a double[]
+	 */
+	private double[] getOAMFPCWeights(CircleSize size) {
+		double[] weights = new double[size.getSpectrumSize()];
+		OAMFPCWeightSlider sliderGui = new OAMFPCWeightSlider(weights);
+		sliderGui.setVisible(true);
+		return weights;
+	}
+	
+	/**
+	 * Requests the user to specify a file to save the classification results to and saves the results.
+	 * @param startPath The file path the user dialog should open in by default
+	 * @param classifications The classifications to save to the selected file.
+	 */
+	private void saveDataToCSV(File startPath, List<int[]> classifications) {
+		JFileChooser fileSaver = new JFileChooser(startPath);
+		switch(fileSaver.showSaveDialog(parent)) {
+			case JFileChooser.APPROVE_OPTION:
+				File selected = fileSaver.getSelectedFile();
+				CSVWriter writer = new CSVWriter(selected, ';'); //TODO character for excel? Potentially with a gui as a picker?
+				writer.write(classifications);
+				JOptionPane.showMessageDialog(parent, "Ergebnisse gespeichert.");
+				break;
+			default:
+				JOptionPane.showMessageDialog(parent, "Ergebnisse NICHT gespeichert.");
+				break;
+		}
+	}
+	
+	/**
+	 * Gets an instance of a chosen classifier with given settings and given learning data.
+	 * @param classifier The type of {@link Classifier} that should be returned
+	 * @param D The {@link DValue} that the classifier should use
+	 * @param pce The pce the classifier should use (permitted values in [0,1])
+	 * @param size The {@link CircleSize} used in the transformation, used for creating weights for OAMFPC
+	 * @param learningData The learning data for the Classifier as a list of Lists, with each sub-list containing a learning dataset for one class
+	 * @return The created classifier instance, ready for classifying data
+	 */
+	private FPC_Derivate getClassifierInstance(Classifier classifier, DValue D, double pce, CircleSize size, List<List<int[]>> learningData) {
+		switch(classifier) {
+			case MFPC:
+				return new MFPC(D, pce, learningData);
+			case OAMFPC:
+				return new OAMFPC(D, pce, learningData, getOAMFPCWeights(size));
+			default:
+				return null;
+		}
+	}
+	
+	/**
+	 * Classifies the data from a list of images
+	 * @param imageProcessors A list of ImageProcessors containing the image data to be classified
+	 * @param classifierObj The Classifier instance as a {@link FPC_Derivate}
+	 * @param size The {@link CircleSize} used in feature generation from the image data
+	 * @param gzt The {@link GZT} used in feature generation from the image data
+	 * @return The classifications of the image data as a List of int[]
+	 */
+	private List<int[]> classifyImages(List<ImageProcessor> imageProcessors, FPC_Derivate classifierObj, CircleSize size, GZT gzt){
+		List<int[]> classifications = new LinkedList<>();
+		for(int cnt = 0; cnt < imageProcessors.size(); cnt++) {
+			int[] imageSpectrum = ImageSpectrum.getImageGSpectrum(this.imageProcessors.get(cnt), size, gzt);
+
+			classifications.add(classifierObj.classify(imageSpectrum));
+		}
+		return classifications;
+	}
+	
+	/**
+	 * Gets the selected enum value from a ButtonGroup that has RadioButtons corresponding to the options of an enum
+	 * @param enumClass The class of the enum to get the values from
+	 * @param group The {@link ButtonGroup} containing the selection.
+	 * @return The selected enum value
+	 */
+	private <T extends Enum<T>> T getEnumChoiceFromButtonGroup(Class<T> enumClass, ButtonGroup group){
+		return Enum.valueOf(enumClass, this.getSelectedButtonFromGroup(group).getText());
 	}
 	
 }
