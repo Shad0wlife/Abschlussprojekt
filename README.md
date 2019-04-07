@@ -54,3 +54,7 @@ Die Bedienung des Plugins geschieht folgendermaßen:
   
   In der CSV-Datei ist dann für jedes Testbild eine Zeile und für jede Klasse eine Spalte zu finden. Wenn ein Testbild einer Klasse zugeordnet 
   wurde, steht an der entsprechenden Stelle in der Tabelle eine 1, an allen anderen Stellen der Zeile befindet sich eine 0.
+
+  
+  Diese Datei kann auch Online in der Quellcodeverwaltung des Projekts eingesehen werden:
+  https://github.com/Shad0wlife/Abschlussprojekt
