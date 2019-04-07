@@ -5,7 +5,7 @@ import java.util.List;
 import abschlussprojekt.util.Util;
 import abschlussprojekt.util.GZT;
 
-public class GZTMatrixGenerator { //TODO Refactoring
+public class GZTMatrixGenerator {
 
 	/**
 	 * Returns a GZT matrix based on the passed GZT enum selection and the passed exponent of the dimensions
@@ -97,7 +97,7 @@ public class GZTMatrixGenerator { //TODO Refactoring
 					}
 				}
 			}else if(currentSubBlockDimension == 2) {
-				//TODO Flip this for Lohweg/Dipl core difference
+				//values corresponding to Prof. Lohweg's dissertation
 				tempLineArray[0] = -1;
 				tempLineArray[1] = 0;
 			}else {

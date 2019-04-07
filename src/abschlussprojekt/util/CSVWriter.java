@@ -22,7 +22,7 @@ public class CSVWriter {
 	}
 	
 	public void write(List<int[]> results) {
-		System.out.println("Writing to File " + this.target.getName()); //DEBUG
+		System.out.println("Writing to File " + this.target.getName());
 		try (FileWriter writer = new FileWriter(target)){
 			int numClasses = results.get(0).length;
 			writeHeaderLine(writer, numClasses);

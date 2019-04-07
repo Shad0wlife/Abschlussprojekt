@@ -24,12 +24,12 @@ import abschlussprojekt.util.CSVWriter;
 import abschlussprojekt.util.CircleSize;
 import abschlussprojekt.util.Classifier;
 import abschlussprojekt.util.Colorspace;
-import abschlussprojekt.util.Debug;
 import abschlussprojekt.util.GZT;
 import abschlussprojekt.util.MorphologicFilter;
 import abschlussprojekt.util.MorphologicFilterSettings;
 import abschlussprojekt.util.Util;
 import abschlussprojekt.util.math.ImageSpectrum;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
@@ -65,28 +65,24 @@ public class OKActionListener implements ActionListener{
 		
 		classifierType = getEnumChoiceFromButtonGroup(Classifier.class, classifierGroup);
 		if(classifierType == null) {
+			IJ.error("Kein Klassifikator gewählt! Beende das Plugin.");
 			System.err.println("No Classifier chosen! Aborting.");
 			return;
 		}
 		
 		gzt = getEnumChoiceFromButtonGroup(GZT.class, gztGroup);
 		if(gzt == null) {
+			IJ.error("Keine GZT gewählt! Beende das Plugin.");
 			System.err.println("No GZT chosen! Aborting.");
 			return;
 		}
 		
-		//DEBUG
-		System.out.println("Classifier: " + classifierType.name());
-		System.out.println("GZT: " + gzt.name());
-		
 		//Get classification data from the learning images
 		List<List<int[]>> classData = new ArrayList<>();
-		File[] defaultOpenPathPointer = {null}; //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
-		Colorspace space = Colorspace.BT2020; //TODO Gui picker dafür anstatt es im code zu machen?
+		File[] defaultOpenPathPointer = {null};
+		Colorspace space = Colorspace.BT2020;
 		
 		do {
-			System.out.println("Starting learning data loop."); //DEBUG
-			
 			List<ImagePlus> imagePluses = Util.getImagesWithDialog(defaultOpenPathPointer, "Bitte einen Ordner mit den Lernbildern der Klasse wählen.");
 			
 			if(!imagePluses.isEmpty()) {		
@@ -99,9 +95,6 @@ public class OKActionListener implements ActionListener{
 		FPC_Derivate classifierObj = this.getClassifierInstance(classifierType, D, this.pce, size, classData);
 		
 		List<int[]> classifications = classifyImages(imageProcessors, classifierObj, size, gzt);
-		
-		//DEBUG
-		Debug.printListOfIntArrays(classifications);
 		
 		//Save results
 		saveDataToCSV(defaultOpenPathPointer[0], classifications);
@@ -159,7 +152,7 @@ public class OKActionListener implements ActionListener{
 			MorphologicFilter.morph(imageProcessor, preprocessingSetting);
 		}
 		
-		return ImageSpectrum.getImageGSpectrum(imageProcessor, size, gzt);
+		return ImageSpectrum.getImageGSpectrum(imageProcessor, size, gzt, false);
 	}
 	
 	/**
@@ -191,6 +184,7 @@ public class OKActionListener implements ActionListener{
 	
 	/**
 	 * Requests the user to specify a file to save the classification results to and saves the results.
+	 * Saves the file as a csv with ';' as seperator for compatibility with german MS Excel.
 	 * @param startPath The file path the user dialog should open in by default
 	 * @param classifications The classifications to save to the selected file.
 	 */
@@ -199,7 +193,7 @@ public class OKActionListener implements ActionListener{
 		switch(fileSaver.showSaveDialog(parent)) {
 			case JFileChooser.APPROVE_OPTION:
 				File selected = fileSaver.getSelectedFile();
-				CSVWriter writer = new CSVWriter(selected, ';'); //TODO character for excel? Potentially with a gui as a picker?
+				CSVWriter writer = new CSVWriter(selected, ';');
 				writer.write(classifications);
 				JOptionPane.showMessageDialog(parent, "Ergebnisse gespeichert.");
 				break;
@@ -240,7 +234,7 @@ public class OKActionListener implements ActionListener{
 	private List<int[]> classifyImages(List<ImageProcessor> imageProcessors, FPC_Derivate classifierObj, CircleSize size, GZT gzt){
 		List<int[]> classifications = new LinkedList<>();
 		for(int cnt = 0; cnt < imageProcessors.size(); cnt++) {
-			int[] imageSpectrum = ImageSpectrum.getImageGSpectrum(imageProcessors.get(cnt), size, gzt);
+			int[] imageSpectrum = ImageSpectrum.getImageGSpectrum(imageProcessors.get(cnt), size, gzt, true);
 
 			classifications.add(classifierObj.classify(imageSpectrum));
 		}

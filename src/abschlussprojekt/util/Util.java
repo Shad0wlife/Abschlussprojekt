@@ -126,7 +126,7 @@ public class Util {
 	 * @param startPathPointer A 1-element File array containing the File object of the folder the dialog should open in by default
 	 * @return The list of images in the chosen folder as List of ImagePlus
 	 */
-	public static List<ImagePlus> getImagesWithDialog(File[] startPathPointer, String title){ //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
+	public static List<ImagePlus> getImagesWithDialog(File[] startPathPointer, String title){
 		List<ImagePlus> imagePluses = new LinkedList<>();
 		FilePicker picker = new FilePicker(imagePluses, startPathPointer, title);
 		picker.setVisible(true);
@@ -138,7 +138,7 @@ public class Util {
 	 * @return The list of images in the chosen folder as List of ImagePlus
 	 */
 	public static List<ImagePlus> getImagesWithDialog(String title){
-		return getImagesWithDialog(new File[] {null}, title); //TODO das muss doch auch schöner ohne das wrapper 1-element array gehen für reference passing
+		return getImagesWithDialog(new File[] {null}, title);
 	}
 	
 	/**
@@ -155,7 +155,6 @@ public class Util {
 				((ColorProcessor)imageProcessor).setRGBWeights(colorspace.getFactorR(), colorspace.getFactorG(), colorspace.getFactorB());
 			}
 			imageProcessor = imageProcessor.convertToByteProcessor(true);
-			System.out.println("Converted image!"); //DEBUG
 		}
 		return imageProcessor;
 	}

@@ -18,14 +18,12 @@ public abstract class FPC_Derivate {
 	 */
 	public int[] classify(int[] featureVector) {
 		int size = membershipFunctions.size();
-		double[] memberships = new double[size]; //DEBUG
 		double max = Double.NEGATIVE_INFINITY;
 		int maxIdx = -1;
 		int[] result = new int[size];
 		
 		for(int cnt = 0; cnt < size; cnt++) {
 			double membership = membershipFunctions.get(cnt).membership(featureVector);
-			memberships[cnt] = membership; //DEBUG
 			
 			if(membership > max) {
 				max = membership;

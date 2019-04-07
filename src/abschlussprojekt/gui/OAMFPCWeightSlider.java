@@ -51,6 +51,7 @@ public class OAMFPCWeightSlider extends JDialog {
 		settingPanel.add(lblModifier);
 		
 		JSlider slider = new JSlider();
+		slider.setMaximum(99); //Avoid division by zero caused by default maximum of 100
 		settingPanel.add(slider);
 		slider.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
@@ -78,9 +79,7 @@ public class OAMFPCWeightSlider extends JDialog {
 				for(int cnt = 0; cnt < size; cnt++) {
 					int idx = cnt + 1;
 					weights[cnt] = Math.pow(((double)idx)/size, exponent) - Math.pow(((double)cnt)/size, exponent);
-					System.out.println("Weight " + idx + " = " + weights[cnt]); //DEBUG
 				}
-				System.out.println("Weightsum: " + Util.arraySumme(weights)); //DEBUG
 				if(flipBox.isSelected()) {
 					Util.reverseArray(weights);
 				}

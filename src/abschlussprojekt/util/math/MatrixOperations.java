@@ -1,6 +1,6 @@
 package abschlussprojekt.util.math;
 
-public class MatrixOperations { //TODO Kommentare übersetzen
+public class MatrixOperations {
 
 	/**
 	 * Multiplies a matrix with a vector
@@ -18,14 +18,14 @@ public class MatrixOperations { //TODO Kommentare übersetzen
         int height = getMatrixHeight(matrix);
         int length = vector.length;
         
-        // Prüfen, ob Matrix und Vektor kompatibel sind
+        // Check Matrix and Vector for compatibility
         if(width == length)
         {
             int[] result = new int[height];
-            // Zeile der Matrix und Position in Ergebnisvektor
+            // Index for row of matrix and index of element in result vector
             for(int posResult = 0; posResult < height; posResult++)
             {
-                // Position s in Zeile der Matrix und Position im Vektor
+                // Index for element in row of matrix and index for element of source vector
                 for(int s = 0; s < width; s++)
                 {
                     result[posResult] += matrix[posResult][s] * vector[s];
@@ -50,18 +50,16 @@ public class MatrixOperations { //TODO Kommentare übersetzen
     	if(!isMatrixRectangular(matA) || !isMatrixRectangular(matB)) {
 			throw new IllegalArgumentException("A matrix is a jagged array and thus not rectangular. Matrices must be rectangular.");
 		}
-        // Breite und Höhe der Eingangsmatritzen anfordern
         int widthA = getMatrixWidth(matA);
         int heightA = getMatrixHeight(matA);
         int widthB = getMatrixWidth(matB);
         int heightB = getMatrixHeight(matB);
-        // Breite und Höhe der Ausgangsmatrix bestimmen
+        
         int widthResult = widthA * widthB;
         int heightResult = heightA * heightB;
         
         int[][]  result = new int[widthResult][heightResult];
         
-        // Ausgangsmatrix berechnen
         for(int matAx = 0; matAx < widthA; matAx++)
         {
             for(int matAy = 0; matAy < heightA; matAy++)

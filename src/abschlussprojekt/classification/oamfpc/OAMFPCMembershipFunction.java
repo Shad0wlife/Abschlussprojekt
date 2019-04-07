@@ -47,7 +47,6 @@ public class OAMFPCMembershipFunction extends MembershipFunction{
 		double[] weighted = new double[vectorSize];
 		for(int cnt = 0; cnt < vectorSize; cnt++) {
 			weighted[cnt] = weights[cnt] * distances[cnt];
-			System.out.println("Weighted feature index " + cnt + " has value: " + weighted[cnt]); //DEBUG
 		}
 		return weighted;
 	}

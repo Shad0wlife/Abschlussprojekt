@@ -34,12 +34,6 @@ public class FilePicker extends JDialog {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-		//DEBUG
-		if(defaultOpenPathPointer[0] == null) {
-			System.out.println("Path is null");
-		}else {
-			System.out.println(defaultOpenPathPointer[0].getAbsolutePath());
-		}
 		JFileChooser fileChooser = new JFileChooser(defaultOpenPathPointer[0]);
 		fileChooser.addActionListener(new FileActionListener(this, fileChooser, images, defaultOpenPathPointer));
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

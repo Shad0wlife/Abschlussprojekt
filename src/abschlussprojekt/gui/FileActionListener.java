@@ -62,7 +62,6 @@ public class FileActionListener implements ActionListener {
 			if(file.isFile()) {
 				ImagePlus image = IJ.openImage(file.getAbsolutePath());
 				
-				//DEBUG
 				System.out.println("Image " + file.getName() + " opened!");
 				
 				if(image != null) {

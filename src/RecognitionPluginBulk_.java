@@ -41,7 +41,7 @@ public class RecognitionPluginBulk_ implements PlugIn {
 	 * @return A list of the 8-Bit ImageProcessors
 	 */
 	private List<ImageProcessor> get8BitImageProcessors(List<ImagePlus> imagePluses){
-		Colorspace colorspace = Colorspace.BT2020; //TODO selection gui?
+		Colorspace colorspace = Colorspace.BT2020;
 		List<ImageProcessor> imageProcessors = new LinkedList<>();
 		for (ImagePlus imagePlus : imagePluses) {
 			ImageProcessor imageProcessor = Util.get8BitImageProcessor(imagePlus, colorspace);
