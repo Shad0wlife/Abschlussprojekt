@@ -78,6 +78,7 @@ public class OAMFPCWeightSlider extends JDialog {
 				
 				for(int cnt = 0; cnt < size; cnt++) {
 					int idx = cnt + 1;
+					//equation proposed by Lohweg et al. at MLRTA 2009
 					weights[cnt] = Math.pow(((double)idx)/size, exponent) - Math.pow(((double)cnt)/size, exponent);
 				}
 				if(flipBox.isSelected()) {
